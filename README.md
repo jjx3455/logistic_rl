@@ -12,6 +12,8 @@ A step consists in picking an item not placed in the bag yet. The output of a st
 <li>State: the content of the bag, i.e. the list of items placed in the bags.</li>
 <li>Reward: the reward for the step is the mass of the bag. </li>
 
+
+
 The procedure stops, i.e. no further steps can be taken, when:
 <li>There is no item left.</li>
 <li>The bag is not filled, but no other items fit in the bag.</li>
@@ -20,24 +22,26 @@ The procedure stops, i.e. no further steps can be taken, when:
 
 ### Usage
 
-<li>Requirements can be installed performing<br />
- ```pip install -r requirements.txt```.</li>
-<li>The custom Gym environment can be called as:<br />
-```bag = Logistic(bag_volume=bag_volume, items=items)```<br />
-where ```bag_volume``` is a float, and ```items``` is a list of pairs of floats. See run_env_logistic.py for a basic file. </li>
-<li>The Python tests of the environments can be run as<br />
- ```pytest -v tests/test_logistic_env.py```
+<li>Requirements can be installed performing
+`pip install -r requirements.txt`</li>
+
+<li>The custom Gym environment can be called as: 'bag = Logistic(bag_volume=bag_volume, items=items)`<br />
+where `bag_volume` is a float, and `items` is a list of pairs of floats. See run_env_logistic.py for a basic file. </li>
+<li>The Python tests of the environments can be run as
+ `pytest -v tests/test_logistic_env.py`
 </li>
 
 ### Remark on the action space. 
-An action consists in taking an item not yet placed in the bag, and placing in the bag. Hence, the set action is dynamical, which is not yet readily implemented in gym. The list of allowed action can be accessed as<br />
-```logistic = Logistic()```
-```logistic.allowed_actions()```
+An action consists in taking an item not yet placed in the bag, and placing in the bag. Hence, the set action is dynamical, which is not yet readily implemented in gym. The list of allowed actions can be accessed as<br />
+```
+logistic = Logistic()
+logistic.allowed_actions()
+```
+<br />
 Since the standard method<br />
-```logistic.action_space.sample()```<br />
-does distinguish between allowed action, a new sampling techniques has been introduced as<br />
-```logistic.items_sampler()```
-This should be changed. 
+`logistic.action_space.sample()`
+does distinguish between allowed action, a new sampling techniques has been introduced as 
+`logistic.items_sampler()`. This should be changed. 
 
 
 
