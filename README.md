@@ -21,22 +21,22 @@ The procedure stops, i.e. no further steps can be taken, when:
 ### Usage
 
 <li>Requirements can be installed performing<br />
- '''pip install -r requirements.txt'''.</li>
+ ```pip install -r requirements.txt```.</li>
 <li>The custom Gym environment can be called as:<br />
-'''bag = Logistic(bag_volume=bag_volume, items=items)'''<br />
-where '''bag_volume''' is a float, and '''items''' is a list of pairs of floats. See run_env_logistic.py for a basic file. </li>
+```bag = Logistic(bag_volume=bag_volume, items=items)```<br />
+where ```bag_volume``` is a float, and ```items``` is a list of pairs of floats. See run_env_logistic.py for a basic file. </li>
 <li>The Python tests of the environments can be run as<br />
- '''pytest -v tests/test_logistic_env.py'''
+ ```pytest -v tests/test_logistic_env.py```
 </li>
 
 ### Remark on the action space. 
 An action consists in taking an item not yet placed in the bag, and placing in the bag. Hence, the set action is dynamical, which is not yet readily implemented in gym. The list of allowed action can be accessed as<br />
-'''logistic = Logistic()'''
-'''logistic.allowed_actions()'''
+```logistic = Logistic()```
+```logistic.allowed_actions()```
 Since the standard method<br />
-'''logistic.action_space.sample()'''<br />
+```logistic.action_space.sample()```<br />
 does distinguish between allowed action, a new sampling techniques has been introduced as<br />
-'''logistic.items_sampler()'''
+```logistic.items_sampler()```
 This should be changed. 
 
 
