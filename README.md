@@ -2,7 +2,7 @@ Ongoing RL implementation of a logistic problem.
 
 Still in a draft state. 
 
-###Introduction
+### Introduction
 
 Consider of a list of items characterized by their volumes and their masses. Give a bag of a fixed given volume, the purpose is to maximize the weight of the bag, once filled. 
 
@@ -18,7 +18,7 @@ The procedure stops, i.e. no further steps can be taken, when:
 <li>The bag is at maximum capacity.</li>
 
 
-###Usage
+### Usage
 
 <li>Requirements can be installed performing<br />
  '''pip install -r requirements.txt'''.</li>
@@ -29,7 +29,7 @@ where '''bag_volume''' is a float, and '''items''' is a list of pairs of floats.
  '''pytest -v tests/test_logistic_env.py'''
 </li>
 
-###Remark on the action space. 
+### Remark on the action space. 
 An action consists in taking an item not yet placed in the bag, and placing in the bag. Hence, the set action is dynamical, which is not yet readily implemented in gym. The list of allowed action can be accessed as<br />
 '''logistic = Logistic()'''
 '''logistic.allowed_actions()'''
