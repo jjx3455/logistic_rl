@@ -6,7 +6,7 @@ Still in a draft state.
 
 Consider of a list of items characterized by their volumes and their masses. Give a bag of a fixed given volume, the purpose is to maximize the weight of the bag, once filled. 
 
-The approach followed is reinforcement learning. The observation space is the volume of the bag, and an action consists in taking one item which has not yet been placed in the bag and place it in the bag. Note that this is problematic since it suggests that the action space is dynamic, which is not implemented yet. 
+The approach followed is reinforcement learning. The observation space is the list of items placed in the bag (represented by an array of order (2, number_of_items)), and an action consists in taking one item from the list of items which has not yet been placed in the bag and place it in the bag. Note that this is problematic since it suggests that the action space is dynamic, which is not implemented yet. 
 
 A step consists in picking an item not placed in the bag yet. The output of a step is:
 <li>State: the content of the bag, i.e. the list of items placed in the bags.</li>
