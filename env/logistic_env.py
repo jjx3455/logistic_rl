@@ -10,8 +10,8 @@ class Logistic(gym.Env):
     """
     Gym class for the logistic problems.
     Args:
+        bag_volume: the max volume of the bag.
         items : a list of pairs of real numbers (volume, mass).
-
     """
 
     metadata = {"render.modes": ["human"]}
@@ -22,21 +22,28 @@ class Logistic(gym.Env):
         self.items = copy.deepcopy(items)
         self.bag_volume = bag_volume
         # The state of the env is the content of the bag. This initializes the state.
-        self.bag_content = []
+        self.bag_content = np.zeros((len(self.items), 2))
         self.remaining_items = copy.deepcopy(self.items)
-        self.packed_volume = sum([vol for (vol, _) in self.bag_content])
-        self.packed_mass = sum([mass for (_, mass) in self.bag_content])
+        self.packed_volume = np.sum(self.bag_content[:, 0])
+        self.packed_mass = np.sum(self.bag_content[:, 1])
 
         # Parameters for the reinforcement learning.
         self.action_space = spaces.Discrete(len(self.items))
         self.allowed_actions = list(range(len(self.items)))
+        low = np.zeros((len(self.items), 2))
+        a = self.bag_volume * np.ones((len(self.items), 1))
+        b = np.inf * np.ones((len(self.items), 1))
+        high = np.concatenate((a, b), axis=1)
         self.observation_space = spaces.Box(
-            low=0, high=self.bag_volume, shape=(1,), dtype=np.int64
+            low=low, high=high, shape=(len(self.items), 2), dtype=np.float64
         )
+        # Keeping tracks of the number of items packed
+        self.n_items_packed = 0
 
     def reset(self, initial_state=None):
         self.bag_content = []
         print("Bag emptied")
+        return self.bag_content
 
     def step(self, action):
         """
@@ -46,7 +53,7 @@ class Logistic(gym.Env):
             The action consists in picking one item in the list of items and place it in the bag.
 
         Returns:
-            state: the content of the bag
+            state: the content of the bag, as (2, n_items) np array.
             reward: the reward of the action, ie the mass of the added item
             done: a bool, If True, the bag cannot be filled any longer.
             {}: Info logistic dictionary.
@@ -65,9 +72,10 @@ class Logistic(gym.Env):
         # if it fits, put it in the bag
         else:
             # I am adding the content to the bag.
-            self.bag_content.append(item)
-            self.packed_volume = sum([vol for (vol, _) in self.bag_content])
-            self.packed_mass = sum([mass for (_, mass) in self.bag_content])
+            self.bag_content[self.n_items_packed, :] = item
+            self.n_items_packed += 1
+            self.packed_volume = np.sum(self.bag_content[:, 0])
+            self.packed_mass = np.sum(self.bag_content[:, 1])
             state = self.bag_content
             # The reward for the step is the mass of the item I have added
             reward = item[1]

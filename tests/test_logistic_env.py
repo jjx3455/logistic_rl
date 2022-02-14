@@ -29,7 +29,9 @@ class TestLogictic:
         masses = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
         items = list(zip(volumes, masses))
         bag = Logistic(bag_volume=bag_volume, items=items)
-        assert bag.bag_content == [], "The bag is not empy initially"
+        to_compare = np.ones((n_items, 2))
+        to_check = bag.bag_content == to_compare
+        assert to_check.all, "The bag is not empy initially"
         for _ in range(int(np.floor(n_items / 2))):
             try:
                 bag.step(bag.action_space.sample())
@@ -56,8 +58,9 @@ class TestLogictic:
         bag = Logistic(bag_volume=bag_volume, items=items)
         action = bag.action_space.sample()
         state, reward, done, infos = bag.step(action)
+        to_check = state == np.ones((n_items, 2))
         assert (
-            state == []
+            to_check.all
         ), "The items is too big for the bag, and should not be in the bag."
         assert reward == 0, "The bag must empty and should not contain any objects."
         assert infos == {}, "The infos should be empty"
@@ -71,7 +74,10 @@ class TestLogictic:
         bag = Logistic(bag_volume=bag_volume, items=items)
         action = bag.action_space.sample()
         state, reward, done, infos = bag.step(action)
-        assert state == [items[action]], "The bag does not contain the right item."
+        to_compare = np.ones((n_items, 2))
+        to_compare[0, :] = items[action]
+        to_check = state == to_compare
+        assert to_check.all, "The bag does not contain the right item."
         assert (
             reward == items[action][1]
         ), "The reward is not the mass of the added item."
