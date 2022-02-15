@@ -23,9 +23,11 @@ class Logistic(gym.Env):
         self.bag_volume = bag_volume
         # The state of the env is the content of the bag. This initializes the state.
         self.bag_content = np.zeros((len(self.items), 2))
-        self.remaining_items = copy.deepcopy(self.items)
         self.packed_volume = np.sum(self.bag_content[:, 0])
         self.packed_mass = np.sum(self.bag_content[:, 1])
+        # Keeping tracks of the number of items packed
+        self.remaining_items = copy.deepcopy(self.items)
+        self.n_items_packed = 0
 
         # Parameters for the reinforcement learning.
         self.action_space = spaces.Discrete(len(self.items))
@@ -37,12 +39,15 @@ class Logistic(gym.Env):
         self.observation_space = spaces.Box(
             low=low, high=high, shape=(len(self.items), 2), dtype=np.float64
         )
-        # Keeping tracks of the number of items packed
-        self.n_items_packed = 0
 
     def reset(self, initial_state=None):
         self.bag_content = np.zeros((len(self.items), 2))
-        print("Bag emptied")
+        self.remaining_items = copy.deepcopy(self.items)
+        self.packed_volume = np.sum(self.bag_content[:, 0])
+        self.packed_mass = np.sum(self.bag_content[:, 1])
+        self.n_items_packed = 0
+        self.allowed_actions = list(range(len(self.items)))
+        # print("Bag emptied, Environment resetted.")
         return self.bag_content
 
     def step(self, action):
@@ -64,7 +69,7 @@ class Logistic(gym.Env):
         item = self.items[action]
         # Check if the item fits in the bag
         if self.packed_volume + item[0] > self.bag_volume:
-            print("The item does not fit in the bag.")
+            # print("The item does not fit in the bag.")
             # I do not modify the bag content
             state = self.bag_content
             # Hence no reward
@@ -84,7 +89,7 @@ class Logistic(gym.Env):
             self.allowed_actions.remove(action)
         # Check if they are still items to be added:
         if self.remaining_items == []:
-            print("No more items to add.")
+            # print("No more items to add.")
             done = True
         else:
             # Case when the bag is at maximum capacity
@@ -97,7 +102,7 @@ class Logistic(gym.Env):
                 )
                 # Check if we can add another item to the bag.
                 if self.packed_volume + min_val_remaining_item > self.bag_volume:
-                    print("The bag is full, no other item can be added")
+                    # print("The bag is full, no other item can be added")
                     done = True
                 else:
                     done = False
