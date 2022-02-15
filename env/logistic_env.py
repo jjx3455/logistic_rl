@@ -41,7 +41,7 @@ class Logistic(gym.Env):
         self.n_items_packed = 0
 
     def reset(self, initial_state=None):
-        self.bag_content = []
+        self.bag_content = np.zeros((len(self.items), 2))
         print("Bag emptied")
         return self.bag_content
 

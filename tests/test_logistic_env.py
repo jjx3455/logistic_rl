@@ -38,7 +38,8 @@ class TestLogictic:
             except:
                 pass
         bag.reset()
-        assert bag.bag_content == [], "The bag is not empty after resetting."
+        to_check = bag.bag_content == to_compare
+        assert to_check.all, "The bag is not empty after resetting."
 
     def test_render(self):
         bag = Logistic()
