@@ -20,7 +20,6 @@ The procedure stops, i.e. no further steps can be taken, when:
 <li>The bag is not filled, but no other items fit in the bag.</li>
 <li>The bag is at maximum capacity.</li>
 </ul>
-<br />
 
 ### Usage
 <ul>
