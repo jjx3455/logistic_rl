@@ -8,7 +8,7 @@ from env.logistic_env import Logistic
 
 # Preparing the items.
 bag_volume = 10
-n_items = 5
+n_items = 50
 volumes = np.random.randint(low=1, high=np.random.randint(2, 10), size=n_items)
 masses = np.random.randint(low=1, high=np.random.randint(2, 50), size=n_items)
 print("Average mass:", np.mean(masses))
