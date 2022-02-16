@@ -107,7 +107,7 @@ class Logistic(gym.Env):
                 else:
                     done = False
 
-        return state, reward, done, {}
+        return state, reward, done, {"A joke!"}
 
     def render(self, mode="human"):
         raise NotImplementedError
