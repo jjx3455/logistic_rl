@@ -118,3 +118,13 @@ class Logistic(gym.Env):
             self.allowed_actions != []
         ), "the list of allowed action should not be empty."
         return np.random.choice(self.allowed_actions)
+
+    def infos(self):
+        total_mass = sum([mass for (_, mass) in self.items])
+        prop_mass = round(self.packed_mass / total_mass, 2)
+        return {
+            "n_items": self.n_items_packed,
+            "filled": round(self.packed_volume / self.bag_volume, 2),
+            "packed_mass": self.packed_mass,
+            "prop_packed_mass": prop_mass,
+        }

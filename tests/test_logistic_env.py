@@ -209,3 +209,28 @@ class TestLogictic:
         assert (
             bag.items_sampler() in bag.allowed_actions
         ), "The picked action should be in the list of allowed actions."
+
+    def test_infos(self):
+        # we need to be sure that one items can be placed in the bags.
+        bag_volume = np.random.randint(1, 100)
+        n_items = np.random.randint(1, 100)
+        volumes = np.random.randint(
+            low=1, high=np.random.randint(2, bag_volume), size=n_items
+        )
+        masses = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
+        items = list(zip(volumes, masses))
+        bag = Logistic(bag_volume=bag_volume, items=items)
+        action = bag.action_space.sample()
+        item = items[action]
+        bag.step(action)
+        total_mass = sum([mass for (_, mass) in items])
+        prop_mass = round(item[1] / total_mass, 2)
+        dict_infos = {
+            "n_items": 1,
+            "filled": round(item[0] / bag_volume, 2),
+            "packed_mass": item[1],
+            "prop_packed_mass": prop_mass,
+        }
+        assert (
+            dict_infos == bag.infos()
+        ), "The informations provided on the state of the bag are not correct."
