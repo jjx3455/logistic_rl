@@ -85,10 +85,10 @@ class Logistic(gym.Env):
             # The reward for the step is the mass of the item I have added
             reward = item[1]
             # I am deleting the bag from the list of remaining items.
-            self.remaining_items.remove(item)
+            self.remaining_items[action] = (0,0)
             self.allowed_actions.remove(action)
         # Check if they are still items to be added:
-        if self.remaining_items == []:
+        if set(self.remaining_items) == {(0,0)}:
             # print("No more items to add.")
             done = True
         else:

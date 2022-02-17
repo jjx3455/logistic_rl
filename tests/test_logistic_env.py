@@ -125,11 +125,10 @@ class TestLogictic:
         items = list(zip(volumes, masses))
         bag = Logistic(bag_volume=bag_volume, items=items)
         action = bag.action_space.sample()
-        count_before = items.count(items[action])
         bag.step(action)
-        count_after = bag.remaining_items.count(items[action])
-        assert (
-            count_before - count_after == 1
+        assert bag.remaining_items[action] == (
+            0,
+            0,
         ), "The item should have been removed from the bag."
 
     def test_no_items_left(self):
@@ -141,10 +140,13 @@ class TestLogictic:
         bag = Logistic(bag_volume=bag_volume, items=items)
         action = bag.action_space.sample()
         _, _, done, _ = bag.step(action)
-        assert (
-            items[action] not in bag.remaining_items
-        ), "The item should have been removed from the bag."
-        assert bag.remaining_items == [], "The list of remaining items should be empty."
+        assert bag.remaining_items[action] == (
+            0,
+            0,
+        ), "The item should have been removed from the list of remaining items."
+        assert set(bag.remaining_items) == {
+            (0, 0)
+        }, "The list of remaining items should be empty."
         assert done == True, "There is no more item to add to the bag."
 
     def test_bag_full_with_one_item(self):
