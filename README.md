@@ -24,11 +24,20 @@ The procedure stops, i.e. no further steps can be taken, when:
 ### Usage
 <ul>
 <li>Requirements can be installed performing
-`pip install -r requirements.txt`</li>
-<li>The custom Gym environment can be called as: 'bag = Logistic(bag_volume=bag_volume, items=items)`<br />
+
+```pip install -r requirements.txt```
+
+</li>
+<li>The custom Gym environment can be called as: 
+
+```bag = Logistic(bag_volume=bag_volume, items=items)```
+
+
 where `bag_volume` is a float, and `items` is a list of pairs of floats. See run_env_logistic.py for a basic file. </li>
 <li>The Python tests of the environments can be run as
- `pytest -v tests/test_logistic_env.py`
+
+ ```pytest -v tests/test_logistic_env.py```
+ 
 </li>
 </ul>
 
