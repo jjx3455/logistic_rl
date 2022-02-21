@@ -77,7 +77,7 @@ class Logistic(gym.Env):
         # if it fits, put it in the bag
         else:
             # I am adding the content to the bag.
-            self.bag_content[self.n_items_packed, :] = item
+            self.bag_content[self.n_items_packed] = item
             self.n_items_packed += 1
             self.packed_volume = np.sum(self.bag_content[:, 0])
             self.packed_mass = np.sum(self.bag_content[:, 1])
@@ -85,10 +85,10 @@ class Logistic(gym.Env):
             # The reward for the step is the mass of the item I have added
             reward = item[1]
             # I am deleting the bag from the list of remaining items.
-            self.remaining_items[action] = (0,0)
+            self.remaining_items[action] = (0, 0)
             self.allowed_actions.remove(action)
         # Check if they are still items to be added:
-        if set(self.remaining_items) == {(0,0)}:
+        if set(self.remaining_items) == {(0, 0)}:
             # print("No more items to add.")
             done = True
         else:
