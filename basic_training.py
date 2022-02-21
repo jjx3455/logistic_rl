@@ -29,7 +29,7 @@ remark = "Test run."
 bag = Logistic(bag_volume=BAG_VOLUME, items=items)
 
 
-num_episodes = 2000
+num_episodes = 1500
 max_steps_per_episode = N_ITEMS  # but it won't go higher than 1
 
 
