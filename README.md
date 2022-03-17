@@ -30,7 +30,7 @@ The procedure stops, i.e. no further steps can be taken, when:
 </li>
 <li>The custom Gym environment can be called as: 
 
-```bag = Logistic(config)```
+```bag = Bag(config)```
 where 
 
 ```config = {"bag_volume": bag_volume, "items": items}``
@@ -48,11 +48,11 @@ where `bag_volume` is a float, and `items` is a list of pairs of floats. See run
 
 An action consists in taking an item not yet placed in the bag, and placing in the bag. Hence, the set action is dynamical, which is not yet readily implemented in gym. The list of allowed actions can be accessed as<br />
 ```
-logistic = Logistic()
-logistic.allowed_actions()
+bag = Bag()
+bag.allowed_actions()
 ```
-Since the standard method `logistic.action_space.sample()`
-does distinguish between allowed action, a new sampling techniques has been introduced as `logistic.items_sampler()`. This should be changed. 
+Since the standard method `bag.action_space.sample()`
+does distinguish between allowed action, a new sampling techniques has been introduced as `bag.items_sampler()`. This should be changed. 
 
 
 
