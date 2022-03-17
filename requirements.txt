@@ -3,5 +3,5 @@ numpy
 pytest
 tqdm
 matplotlib
-"ray[rllib]"
-tensorflow>=2.6
+ray[rllib]
+tensorflow
