@@ -31,6 +31,7 @@ The procedure stops, i.e. no further steps can be taken, when:
 <li>The custom Gym environment can be called as: 
 
 ```bag = Bag(config)```
+
 where 
 
 ```config = {"bag_volume": bag_volume, "items": items}``
@@ -53,9 +54,6 @@ bag.allowed_actions()
 ```
 Since the standard method `bag.action_space.sample()`
 does distinguish between allowed action, a new sampling techniques has been introduced as `bag.items_sampler()`. This should be changed. 
-
-
-
 
 
 
