@@ -1,20 +1,27 @@
 """Script containing the test """
 import pytest
 import numpy as np
-from env.logistic_env import Logistic
+from logistic_rl.envs import Bag
 
 
 class TestLogictic:
     def test_setup(self):
-        bag = Logistic()
-        assert bag.bag_volume == 100, "The default bag volume is incorrect"
-        assert bag.items == [], "The defaults items list is not correct"
         bag_volume = np.random.randint(1, 100)
         n_items = np.random.randint(1, 100)
         volumes = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
         masses = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
         items = list(zip(volumes, masses))
-        bag = Logistic(bag_volume=bag_volume, items=items)
+        config = {"bag_volume": bag_volume, "items": items}
+        bag = Bag(config)
+        assert bag.bag_volume == bag_volume, "The default bag volume is incorrect"
+        assert bag.items == items, "The defaults items list is not correct"
+        bag_volume = np.random.randint(1, 100)
+        n_items = np.random.randint(1, 100)
+        volumes = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
+        masses = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
+        items = list(zip(volumes, masses))
+        config = {"bag_volume": bag_volume, "items": items}
+        bag = Bag(config)
         assert (
             bag.action_space.n == n_items
         ), "The number of actions does not fit the number of items."
@@ -28,7 +35,8 @@ class TestLogictic:
         volumes = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
         masses = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
         items = list(zip(volumes, masses))
-        bag = Logistic(bag_volume=bag_volume, items=items)
+        config = {"bag_volume": bag_volume, "items": items}
+        bag = Bag(config)
         to_compare = np.zeros((n_items, 2))
         to_check = bag.bag_content == to_compare
         assert to_check.all() == True, "The bag is not empy initially"
@@ -42,7 +50,13 @@ class TestLogictic:
         assert to_check.all() == True, "The bag is not empty after resetting."
 
     def test_render(self):
-        bag = Logistic()
+        bag_volume = np.random.randint(1, 100)
+        n_items = np.random.randint(1, 100)
+        volumes = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
+        masses = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
+        items = list(zip(volumes, masses))
+        config = {"bag_volume": bag_volume, "items": items}
+        bag = Bag(config)
         with pytest.raises(NotImplementedError):
             bag.render()
 
@@ -56,7 +70,8 @@ class TestLogictic:
         )
         masses = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
         items = list(zip(volumes, masses))
-        bag = Logistic(bag_volume=bag_volume, items=items)
+        config = {"bag_volume": bag_volume, "items": items}
+        bag = Bag(config)
         action = bag.action_space.sample()
         state, reward, done, infos = bag.step(action)
         to_check = state == np.zeros((n_items, 2))
@@ -72,7 +87,8 @@ class TestLogictic:
         volumes = np.random.randint(low=1, high=bag_volume, size=n_items)
         masses = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
         items = list(zip(volumes, masses))
-        bag = Logistic(bag_volume=bag_volume, items=items)
+        config = {"bag_volume": bag_volume, "items": items}
+        bag = Bag(config)
         action = bag.action_space.sample()
         state, reward, _, infos = bag.step(action)
         to_compare = np.zeros((n_items, 2))
@@ -90,12 +106,16 @@ class TestLogictic:
         volumes = np.random.randint(low=1, high=bag_volume, size=n_items)
         masses = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
         items = list(zip(volumes, masses))
-        bag = Logistic(bag_volume=bag_volume, items=items)
+        config = {"bag_volume": bag_volume, "items": items}
+        bag = Bag(config)
         forbidden_action = n_items + np.random.randint(1, 100)
-        with pytest.raises(Exception) as e:
-            bag.step(forbidden_action)
-        error = "The action is not allowed."
-        assert error == str(e.value)
+        bag_content = bag.bag_content
+        state, reward, _, _ = bag.step(forbidden_action)
+        to_check = state == bag_content
+        assert (
+            to_check.all()
+        ), "The bag content should not be modified on an action out of range."
+        assert reward == 0, "The reward should be 0 for an action which is not allowed."
 
     def test_allowed_actions(self):
         bag_volume = np.random.randint(2, 100)
@@ -103,18 +123,20 @@ class TestLogictic:
         volumes = np.random.randint(low=1, high=bag_volume, size=n_items)
         masses = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
         items = list(zip(volumes, masses))
-        bag = Logistic(bag_volume=bag_volume, items=items)
+        config = {"bag_volume": bag_volume, "items": items}
+        bag = Bag(config)
         action = bag.action_space.sample()
         bag.step(action)
         assert (
             action not in bag.allowed_actions
         ), "The action should have been removed from the allowed actions."
-        with pytest.raises(Exception) as e:
-            assert bag.step(
-                action
-            ), "An action cannot be performed twice in a row without raising an exception."
-        error = "The action is not allowed."
-        assert error == str(e.value)
+        bag_content = bag.bag_content
+        state, reward, _, _ = bag.step(action)
+        to_check = state == bag_content
+        assert (
+            to_check.all()
+        ), "The bag content should not be modified on an action repeated twice."
+        assert reward == 0, "No reward should be given for an action repeated twice."
 
     def test_remaining_items(self):
         # Beware that items can appear in more than one copy in the list of items.
@@ -123,7 +145,8 @@ class TestLogictic:
         volumes = np.random.randint(low=1, high=bag_volume, size=n_items)
         masses = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
         items = list(zip(volumes, masses))
-        bag = Logistic(bag_volume=bag_volume, items=items)
+        config = {"bag_volume": bag_volume, "items": items}
+        bag = Bag(config)
         action = bag.action_space.sample()
         bag.step(action)
         assert bag.remaining_items[action] == (
@@ -137,7 +160,8 @@ class TestLogictic:
         volumes = np.random.randint(low=1, high=bag_volume, size=n_items)
         masses = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
         items = list(zip(volumes, masses))
-        bag = Logistic(bag_volume=bag_volume, items=items)
+        config = {"bag_volume": bag_volume, "items": items}
+        bag = Bag(config)
         action = bag.action_space.sample()
         _, _, done, _ = bag.step(action)
         assert bag.remaining_items[action] == (
@@ -155,7 +179,8 @@ class TestLogictic:
         volumes = np.random.randint(low=bag_volume, high=bag_volume + 1, size=n_items)
         masses = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
         items = list(zip(volumes, masses))
-        bag = Logistic(bag_volume=bag_volume, items=items)
+        config = {"bag_volume": bag_volume, "items": items}
+        bag = Bag(config)
         action = bag.action_space.sample()
         _, _, done, _ = bag.step(action)
         assert bag_volume <= bag.packed_volume, "The packed volume should be maximal."
@@ -171,7 +196,8 @@ class TestLogictic:
         )
         masses = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
         items = list(zip(volumes, masses))
-        bag = Logistic(bag_volume=bag_volume, items=items)
+        config = {"bag_volume": bag_volume, "items": items}
+        bag = Bag(config)
         action = bag.action_space.sample()
         print(items[action])
         _, _, done, _ = bag.step(action)
@@ -188,7 +214,8 @@ class TestLogictic:
         volumes = np.random.randint(low=1, high=bag_volume, size=n_items)
         masses = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
         items = list(zip(volumes, masses))
-        bag = Logistic(bag_volume=bag_volume, items=items)
+        config = {"bag_volume": bag_volume, "items": items}
+        bag = Bag(config)
         action = bag.action_space.sample()
         bag.step(action)
         with pytest.raises(Exception):
@@ -202,7 +229,8 @@ class TestLogictic:
         )
         masses = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
         items = list(zip(volumes, masses))
-        bag = Logistic(bag_volume=bag_volume, items=items)
+        config = {"bag_volume": bag_volume, "items": items}
+        bag = Bag(config)
         action = bag.action_space.sample()
         bag.step(action)
         assert (
@@ -221,7 +249,8 @@ class TestLogictic:
         )
         masses = np.random.randint(low=1, high=np.random.randint(2, 100), size=n_items)
         items = list(zip(volumes, masses))
-        bag = Logistic(bag_volume=bag_volume, items=items)
+        config = {"bag_volume": bag_volume, "items": items}
+        bag = Bag(config)
         action = bag.action_space.sample()
         item = items[action]
         bag.step(action)

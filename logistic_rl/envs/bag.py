@@ -6,7 +6,7 @@ import gym
 from gym import spaces
 
 
-class Logistic(gym.Env):
+class Bag(gym.Env):
     """
     Gym class for the logistic problems.
     Args:
@@ -16,9 +16,11 @@ class Logistic(gym.Env):
 
     metadata = {"render.modes": ["human"]}
 
-    def __init__(self, bag_volume: float = 100.0, items: List = []):
-        super(Logistic, self).__init__()
-
+    def __init__(self, config: dict):
+        super(Bag, self).__init__()
+        assert list(config.keys()) == ["bag_volume", "items"], "the configuration is incorrect."
+        items = config["items"]
+        bag_volume = config["bag_volume"]
         self.items = copy.deepcopy(items)
         self.bag_volume = bag_volume
         # The state of the env is the content of the bag. This initializes the state.
@@ -64,29 +66,32 @@ class Logistic(gym.Env):
             {}: Info logistic dictionary.
         """
         # check if the item exists.
-        assert action in self.allowed_actions, "The action is not allowed."
-        # Pick the item
-        item = self.items[action]
-        # Check if the item fits in the bag
-        if self.packed_volume + item[0] > self.bag_volume:
-            # print("The item does not fit in the bag.")
-            # I do not modify the bag content
+        if action not in self.allowed_actions:
             state = self.bag_content
-            # Hence no reward
             reward = 0
-        # if it fits, put it in the bag
+        # Pick the item
         else:
-            # I am adding the content to the bag.
-            self.bag_content[self.n_items_packed] = item
-            self.n_items_packed += 1
-            self.packed_volume = np.sum(self.bag_content[:, 0])
-            self.packed_mass = np.sum(self.bag_content[:, 1])
-            state = self.bag_content
-            # The reward for the step is the mass of the item I have added
-            reward = item[1]
-            # I am deleting the bag from the list of remaining items.
-            self.remaining_items[action] = (0, 0)
-            self.allowed_actions.remove(action)
+            item = self.items[action]
+            # Check if the item fits in the bag
+            if self.packed_volume + item[0] > self.bag_volume:
+                # print("The item does not fit in the bag.")
+                # I do not modify the bag content
+                state = self.bag_content
+                # Hence no reward
+                reward = 0
+            # if it fits, put it in the bag
+            else:
+                # I am adding the content to the bag.
+                self.bag_content[self.n_items_packed] = item
+                self.n_items_packed += 1
+                self.packed_volume = np.sum(self.bag_content[:, 0])
+                self.packed_mass = np.sum(self.bag_content[:, 1])
+                state = self.bag_content
+                # The reward for the step is the mass of the item I have added
+                reward = item[1]
+                # I am deleting the bag from the list of remaining items.
+                self.remaining_items[action] = (0, 0)
+                self.allowed_actions.remove(action)
         # Check if they are still items to be added:
         if set(self.remaining_items) == {(0, 0)}:
             # print("No more items to add.")
