@@ -50,6 +50,29 @@ class BagContent(list):
 
         return items
 
+    def perfect_bag(self, n_cat):
+        """The perfect bags returns a bag for which there is a unique well know solutions to the logistic problem.
+        Args:
+            n_items_cat, int: the number of items per category of weights.
+            n_cat, int: the number of categories.
+
+        Return:
+            a list of items: a list of length n_items of pair of floats.
+            a bag volume: a float setting the volume of the bag for a perfect solution.
+        """
+        assert (
+            self.parameters["n_items"] % n_cat == 0
+        ), "the bag cannot be paerfect: n_cat must be a dividor of items."
+        volumes = []
+        masses = []
+        n_items_cat = int(self.parameters["n_items"] / n_cat)
+        for i in range(n_cat):
+            volumes += [10**i] * n_items_cat
+            masses += [10 ** (-i)] * n_items_cat
+        items = list(zip(volumes, masses))
+        bag_volume = n_items_cat
+        return items, bag_volume
+
     def masses(self, items):
         return [mass for (_, mass) in items]
 
